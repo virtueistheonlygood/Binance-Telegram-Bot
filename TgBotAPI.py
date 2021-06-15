@@ -2,6 +2,7 @@ import requests
 import re
 
 
+
 def sendMessage(chat_id, text, bot_secret):
     # print(text)
     data = {'text': f"{text}", 'chat_id': f"{chat_id}"}
