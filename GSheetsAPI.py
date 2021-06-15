@@ -1,4 +1,4 @@
-from Binance_Bot_old import readFile
+from FileIO import readFile
 import pandas as pd
 import pygsheets
 import Sheets_Config as sh
