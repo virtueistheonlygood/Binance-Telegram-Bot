@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 *$py.class
+alerts.json
+alerts_bak.json
+client_secret.json
+sheets.googleapis.com-python.json
+Tg_Ids.json
+update_id.json
 
 # C extensions
 *.so
@@ -127,3 +133,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+Binance_Bot_old.py
