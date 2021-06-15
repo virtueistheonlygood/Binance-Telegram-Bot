@@ -134,3 +134,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 Binance_Bot_old.py
+sheets.json
