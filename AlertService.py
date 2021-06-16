@@ -214,4 +214,4 @@ def debug():
     refreshGem()
     for i, row in sh.GEM.iterrows():
         createAlertFromRow(row=row)
-debug()
+# debug()
