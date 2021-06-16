@@ -1,3 +1,4 @@
+import Alerts_Data as ad
 from os import read
 from TgBotAPI import *
 from FileIO import *
@@ -25,7 +26,7 @@ def dhms_from_seconds(seconds):
 
 
 def write_alert(coin, alert):
-    alerts = readFile("alerts.json")
+    alerts = ad.ALERTS
     flag = True
     if not alerts.__contains__(coin):
         alerts[coin] = []
@@ -44,11 +45,11 @@ def write_alert(coin, alert):
     if flag:
         alerts[coin].append(alert)
 
-    writeFile(alerts, "alerts.json")
+    ad.ALERTS = alerts
 
 
 def checkAlert(mode=1):
-    alerts = readFile("alerts.json")
+    alerts = ad.ALERTS
     prices = getAllPrices()
     flag = False
     for coin in alerts:
@@ -72,7 +73,8 @@ def checkAlert(mode=1):
                                 datetime.now().timestamp()*1000)
                             flag = True
     if flag:
-        writeFile(alerts, "alerts.json")
+        ad.ALERTS = alerts
+        ad.dumpAlerts()
 
 
 def triggerAlert(alert):
@@ -89,7 +91,7 @@ def triggerAlert(alert):
         if row.empty:
             return
         entry = float(row['ENTRY'][1:].replace(',', ''))
-        lev = int(row['LEV'])
+        lev = abs(int(row['LEV']))
         profit = round(((float(row[type][1:].replace(',', '')
                                )-entry)/entry) * 100 * lev, 2)
         # t = ""
@@ -159,10 +161,19 @@ def createAlert(coin, price=0.0, type="Generic", repeat=1, df=pd.DataFrame()):
         'repeat': repeat
     }
     write_alert(coin, alert)
+    if df.empty :
+        ad.dumpAlerts()
 
+def createAlertFromRow(row=pd.DataFrame()):
+    if "SPOT" in row["CODE"] or "FUTURES" in row["CODE"] or "GEM" in row["CODE"] or "SCALP" in row["CODE"]:
+        for key in row.keys():
+            if "TP" in key or "SL" in key or "ENTRY" in key:
+                createAlert(coin=row["SYMBOL"], type=key, df=row)
+                # print(row)
+        ad.dumpAlerts()
 
 def disableAlert(code, type="any"):
-    alerts = readFile("alerts.json")
+    alerts = ad.ALERTS
 
     for coin in alerts.keys():
         for alert in alerts[coin]:
@@ -172,12 +183,13 @@ def disableAlert(code, type="any"):
                 elif alert['type'] == type:
                     alerts[coin][alerts[coin].index(alert)]['isActive'] = False
 
-    writeFile(alerts, "alerts.json")
+    ad.ALERTS = alerts
+    ad.dumpAlerts()
     return
 
 
 def enableAlert(code, type="any"):
-    alerts = readFile("alerts.json")
+    alerts = ad.ALERTS
 
     for coin in alerts.keys():
         for alert in alerts[coin]:
@@ -187,10 +199,19 @@ def enableAlert(code, type="any"):
                 elif alert['type'] == type:
                     alerts[coin][alerts[coin].index(alert)]['isActive'] = True
 
-    writeFile(alerts, "alerts.json")
+    ad.ALERTS = alerts
+    ad.dumpAlerts()
     return
 
 
 def backupAlerts():
     alerts = readFile("alerts.json")
     writeFile(alerts, "alerts_bak.json")
+
+
+def debug():
+    ad.pumpAlerts()
+    refreshGem()
+    for i, row in sh.GEM.iterrows():
+        createAlertFromRow(row=row)
+debug()

@@ -37,19 +37,26 @@ def createNewCall(message):
 
 
 def createSheetCall(message):
-    updateSheetAlerts()
     text = ""
     if "SPOT_" in message:
+        refreshSpot()
         row = sh.SPOT.loc[sh.SPOT["CODE"] == message].iloc[0]
+        createAlertFromRow(row)
         text = generateCall_SPOT(row)
     elif "FUTURES_" in message:
+        refreshFutures()
         row = sh.FUTURES.loc[sh.FUTURES["CODE"] == message].iloc[0]
+        createAlertFromRow(row)
         text = generateCall_FUTURES(row)
     elif "GEM_" in message:
+        refreshGem()
         row = sh.GEM.loc[sh.GEM["CODE"] == message].iloc[0]
+        createAlertFromRow(row)
         text = generateCall_GEM(row)
     elif "SCALP_" in message:
+        refreshScalp()
         row = sh.SCALP.loc[sh.SCALP["CODE"] == message].iloc[0]
+        createAlertFromRow(row)
         text = generateCall_SCALP(row)
     return text
 
@@ -104,23 +111,27 @@ def enableAlertFromMessage(message):
 def generateCall_SPOT(row):
     text = f"#{row['CODE']}"
     text += f"\nPair: {row['PAIR']}"
-    text += f"\nEntry - {row['ENTRY']}\n"
+    text += f"\nEntry - {row['ENTRY']}"
 
+    text += f"\n"
     text += f"\nShort Term Targets" if not row['STTP1'] == "" else ""
     text += f"\nTP1 - {row['STTP1']}" if not row['STTP1'] == "" else ""
     text += f"\nTP2 - {row['STTP2']}" if not row['STTP2'] == "" else ""
-    text += f"\nTP3 - {row['STTP3']}\n" if not row['STTP3'] == "" else "\n"
+    text += f"\nTP3 - {row['STTP3']}" if not row['STTP3'] == "" else ""
 
+    text += f"\n"
     text += f"\nMid Term Targets" if not row['MTTP1'] == "" else ""
     text += f"\nTP1 - {row['MTTP1']}" if not row['MTTP1'] == "" else ""
     text += f"\nTP2 - {row['MTTP2']}" if not row['MTTP2'] == "" else ""
-    text += f"\nTP3 - {row['MTTP3']}\n" if not row['MTTP3'] == "" else "\n"
+    text += f"\nTP3 - {row['MTTP3']}" if not row['MTTP3'] == "" else ""
 
+    text += f"\n"
     text += f"\nLong Term Targets" if not row['LTTP1'] == "" else ""
     text += f"\nTP1 - {row['LTTP1']}" if not row['LTTP1'] == "" else ""
     text += f"\nTP2 - {row['LTTP2']}" if not row['LTTP2'] == "" else ""
-    text += f"\nTP3 - {row['LTTP3']}\n" if not row['LTTP3'] == "" else "\n"
-
+    text += f"\nTP3 - {row['LTTP3']}" if not row['LTTP3'] == "" else ""
+    
+    text += f"\n"
     text += f"\nSL: {row['SL']}" if not row['SL'] == "" else "SL - $0.0"
 
     # print(text)
@@ -129,9 +140,11 @@ def generateCall_SPOT(row):
 
 def generateCall_FUTURES(row):
     text = f"#{row['CODE']}"
-    text += f"\nPair: {row['PAIR']} (x10)"
-    text += f"\nEntry - {row['ENTRY']}\n"
-
+    text += f"\nLong" if int(row['LEV']) > 0 else f"\nShort"
+    text += f"\nPair: {row['PAIR']} (x{abs(int(row['LEV']))})"
+    text += f"\nEntry - {row['ENTRY']}"
+    
+    text += f"\n"
     text += f"\nExit"
     text += f"\nTP1 - {row['TP1']}" if not row['TP1'] == "" else ""
     text += f"\nTP2 - {row['TP2']}" if not row['TP2'] == "" else ""
@@ -139,8 +152,9 @@ def generateCall_FUTURES(row):
     text += f"\nTP4 - {row['TP4']}" if not row['TP4'] == "" else ""
     text += f"\nTP5 - {row['TP5']}" if not row['TP5'] == "" else ""
     text += f"\nTP6 - {row['TP6']}" if not row['TP6'] == "" else ""
-    text += f"\nTP7 - {row['TP7']}\n" if not row['TP7'] == "" else "\n"
+    text += f"\nTP7 - {row['TP7']}" if not row['TP7'] == "" else ""
 
+    text += f"\n"
     text += f"\nSL: {row['SL']}" if not row['SL'] == "" else "SL - $0.0"
 
     # print(text)
@@ -150,13 +164,15 @@ def generateCall_FUTURES(row):
 def generateCall_GEM(row):
     text = f"#{row['CODE']}"
     text += f"\nPair: {row['PAIR']}"
-    text += f"\nEntry - {row['ENTRY']}\n"
+    text += f"\nEntry - {row['ENTRY']}"
 
+    text += f"\n"
     text += f"\nTargets"
     text += f"\nTP1 - {row['TP1']}" if not row['TP1'] == "" else ""
     text += f"\nTP2 - {row['TP2']}" if not row['TP2'] == "" else ""
-    text += f"\nTP3 - {row['TP3']}\n" if not row['TP3'] == "" else "\n"
+    text += f"\nTP3 - {row['TP3']}" if not row['TP3'] == "" else ""
 
+    text += f"\n"
     text += f"\nSL: {row['SL']}" if not row['SL'] == "" else "SL - $0.0"
 
     # print(text)
@@ -165,14 +181,18 @@ def generateCall_GEM(row):
 
 def generateCall_SCALP(row):
     text = f"#{row['CODE']}"
-    text += f"\nPair: {row['PAIR']} (x10)"
-    text += f"\nEntry - {row['ENTRY']}\n"
+    text += f"\nLong" if int(row['LEV']) > 0 else f"\nShort"
+    text += f"\nPair: {row['PAIR']} (x{abs(int(row['LEV']))})"
+    text += f"\nEntry - {row['ENTRY']}"
 
+    text += f"\n"
     text += f"\nExit"
     text += f"\nTP1 - {row['TP1']}" if not row['TP1'] == "" else ""
     text += f"\nTP2 - {row['TP2']}" if not row['TP2'] == "" else ""
-    text += f"\nTP3 - {row['TP3']}\n" if not row['TP3'] == "" else "\n"
+    text += f"\nTP3 - {row['TP3']}" if not row['TP3'] == "" else ""
+    text += f"\nTP4 - {row['TP4']}" if not row['TP4'] == "" else ""
 
+    text += f"\n"
     text += f"\nSL: {row['SL']}" if not row['SL'] == "" else "SL - $0.0"
 
     # print(text)

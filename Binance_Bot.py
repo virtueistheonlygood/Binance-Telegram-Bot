@@ -32,10 +32,7 @@ def updateSheetAlerts():
     sheets = [sh.SPOT, sh.FUTURES, sh.SCALP, sh.GEM]
     for df in sheets:
         for i, row in df.iterrows():
-            if "SPOT" in row["CODE"] or "FUTURES" in row["CODE"] or "GEM" in row["CODE"] or "SCALP" in row["CODE"]:
-                for key in df.keys():
-                    if "TP" in key or "SL" in key or "ENTRY" in key:
-                        createAlert(coin=row["SYMBOL"], type=key, df=row)
+            createAlertFromRow(row)
 
 
 def main(i):
@@ -50,7 +47,7 @@ def main(i):
     while True:
         try:
             i += 1
-            if i % 600 == 1:
+            if i % 200 == 1:
                 updateSheetAlerts()
                 backupAlerts()
                 sendException = True
