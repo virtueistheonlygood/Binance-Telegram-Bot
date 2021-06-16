@@ -48,9 +48,9 @@ def main(i):
     while True:
         try:
             getAllPrices()
-            pumpAlerts()
             i += 1
             if i % 200 == 1:
+                pumpAlerts()
                 updateSheetAlerts()
                 backupAlerts()
                 sendException = True
