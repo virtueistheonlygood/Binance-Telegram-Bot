@@ -1,3 +1,4 @@
+from Alerts_Data import pumpAlerts
 from logging import error
 import requests
 import urllib3
@@ -46,6 +47,8 @@ def main(i):
     sendException = True
     while True:
         try:
+            getAllPrices()
+            pumpAlerts()
             i += 1
             if i % 200 == 1:
                 updateSheetAlerts()
