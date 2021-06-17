@@ -12,6 +12,8 @@ bot_secret = str(readFile("Tg_Ids.json")["bot_secret"])
 
 def processMessage():
     message = getMessage(kingId, bot_secret)
+    if "Error" in message:
+        raise Exception(message)
     message = message.upper()
     text = ""
     if "NO MESSAGES" in message:
