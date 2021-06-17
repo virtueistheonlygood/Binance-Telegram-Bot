@@ -39,6 +39,9 @@ def createNewCall(message):
 
 
 def createSheetCall(message):
+    data = message.split(" ")
+    if not len(data) == 1:
+        return "Invalid Format"
     text = ""
     if "SPOT_" in message:
         refreshSpot()
