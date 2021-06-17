@@ -161,7 +161,7 @@ def createAlert(coin, price=0.0, type="Generic", repeat=1, df=pd.DataFrame()):
         'repeat': repeat
     }
     write_alert(coin, alert)
-    if df.empty :
+    if type=="Generic" :
         ad.dumpAlerts()
 
 def createAlertFromRow(row=pd.DataFrame()):
