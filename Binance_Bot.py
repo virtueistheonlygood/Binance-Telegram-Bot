@@ -1,5 +1,5 @@
 from datetime import date
-from Alerts_Data import pumpAlerts
+import Alerts_Data as ad
 from logging import error
 import requests
 import urllib3
@@ -65,10 +65,12 @@ def main(i):
             i += 1
             getAllPrices()
             if i % 200 == 1:
-                pumpAlerts()
+                ad.pumpAlerts()
                 updateSheetAlerts()
                 backupAlerts()
                 sendException = True
+            if ad.isAlertsNeedDump():
+                ad.dumpAlerts()
             processMessage()
             checkAlert(i-1)
         except Exception as e:
