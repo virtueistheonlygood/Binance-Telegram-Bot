@@ -74,7 +74,6 @@ def checkAlert(mode=1):
                             flag = True
     if flag:
         ad.ALERTS = alerts
-        ad.dumpAlerts()
 
 
 def triggerAlert(alert):
@@ -161,8 +160,6 @@ def createAlert(coin, price=0.0, type="Generic", repeat=1, df=pd.DataFrame()):
         'repeat': repeat
     }
     write_alert(coin, alert)
-    if type=="Generic" :
-        ad.dumpAlerts()
 
 def createAlertFromRow(row=pd.DataFrame()):
     if "SPOT" in row["CODE"] or "FUTURES" in row["CODE"] or "GEM" in row["CODE"] or "SCALP" in row["CODE"]:
@@ -170,7 +167,6 @@ def createAlertFromRow(row=pd.DataFrame()):
             if "TP" in key or "SL" in key or "ENTRY" in key:
                 createAlert(coin=row["SYMBOL"], type=key, df=row)
                 # print(row)
-        ad.dumpAlerts()
 
 def disableAlert(code, type="any"):
     alerts = ad.ALERTS
@@ -184,7 +180,6 @@ def disableAlert(code, type="any"):
                     alerts[coin][alerts[coin].index(alert)]['isActive'] = False
 
     ad.ALERTS = alerts
-    ad.dumpAlerts()
     return
 
 
@@ -200,7 +195,6 @@ def enableAlert(code, type="any"):
                     alerts[coin][alerts[coin].index(alert)]['isActive'] = True
 
     ad.ALERTS = alerts
-    ad.dumpAlerts()
     return
 
 
