@@ -1,9 +1,11 @@
+from math import e
 import requests
 import re
 
 
+
 def sendMessage(chat_id, text, bot_secret):
-    # print(text)
+    print(text)
     data = {'text': f"{text}", 'chat_id': f"{chat_id}"}
     requests.post(
         f"https://api.telegram.org/bot{bot_secret}/sendMessage", data=data)
@@ -15,8 +17,9 @@ def getMessage(chat_id, bot_secret):
     json = response.json()
     # print(json)
     if json['ok'] == False:
-        print("Error in getMessage ", json['description'])
-        return
+        text = f"Error in getMessage {json['description']}"
+        print(text)
+        return text
     text = "No Messages"
     for i in json['result']:
         if "message" in i.keys():
