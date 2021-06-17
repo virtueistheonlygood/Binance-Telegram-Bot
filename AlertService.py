@@ -24,6 +24,19 @@ def dhms_from_seconds(seconds):
     days, hours = divmod(hours, 24)
     return (days, hours, minutes, seconds)
 
+def readableDateDiff(dt2,dt1,dhms=[1,1,1,1]):
+    seconds = date_diff_in_seconds(dt2,dt1)
+    td = dhms_from_seconds(seconds)
+    t = ""
+    t = t + str(td[0]) + (" Day " if td[0] ==
+                          1 else " Days ") if td[0] > 0 and dhms[0] else t
+    t = t + str(td[1]) + (" Hour " if td[1] ==
+                          1 else " Hours ") if td[1] > 0 and dhms[1] else t
+    t = t + str(td[2]) + (" Minute " if td[2] ==
+                          1 else " Minutes ") if td[2] > 0 and dhms[2] else t
+    t = t + str(td[3]) + (" Second " if td[3] ==
+                          1 else " Seconds ") if td[3] > 0 and dhms[3] else t
+    return t
 
 def write_alert(coin, alert):
     alerts = ad.ALERTS
@@ -103,13 +116,7 @@ def triggerAlert(alert):
         lev = ""
     td = dhms_from_seconds(date_diff_in_seconds(
         datetime.now(), datetime.fromtimestamp(alert['createdAt']/1000)))
-    t = ""
-    t = t + str(td[0]) + (" Day " if td[0] ==
-                          1 else " Days ") if td[0] > 0 else t
-    t = t + str(td[1]) + (" Hour " if td[1] ==
-                          1 else " Hours ") if td[1] > 0 else t
-    t = t + str(td[2]) + (" Minute " if td[2] ==
-                          1 else " Minutes ") if td[2] > 0 else t
+    t = readableDateDiff(datetime.now(), datetime.fromtimestamp(alert['createdAt']/1000),[1,1,1,0])
     # print()
     
     text = dict({

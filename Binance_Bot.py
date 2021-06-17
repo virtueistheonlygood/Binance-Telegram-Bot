@@ -38,16 +38,7 @@ def updateSheetAlerts():
         for i, row in df.iterrows():
             createAlertFromRow(row)
     endTime = datetime.now()
-    td = dhms_from_seconds(date_diff_in_seconds(endTime, startTime))
-    t = ""
-    t = t + str(td[0]) + (" Day " if td[0] ==
-                          1 else " Days ") if td[0] > 0 else t
-    t = t + str(td[1]) + (" Hour " if td[1] ==
-                          1 else " Hours ") if td[1] > 0 else t
-    t = t + str(td[2]) + (" Minute " if td[2] ==
-                          1 else " Minutes ") if td[2] > 0 else t
-    t = t + str(td[3]) + (" Second " if td[3] ==
-                          1 else " Seconds ") if td[3] > 0 else t
+    t = readableDateDiff(endTime,startTime)
     print("updating Complete - " ,endTime , "Duration - " , t)
 
 
