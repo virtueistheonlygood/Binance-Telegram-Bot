@@ -90,7 +90,7 @@ def triggerAlert(alert):
         if row.empty:
             return
         entry = float(row['ENTRY'][1:].replace(',', ''))
-        lev = abs(int(row['LEV']))
+        lev = (int(row['LEV']))
         profit = round(((float(row[type][1:].replace(',', '')
                                )-entry)/entry) * 100 * lev, 2)
         # t = ""
@@ -110,6 +110,7 @@ def triggerAlert(alert):
     t = t + str(td[2]) + (" Minute " if td[2] ==
                           1 else " Minutes ") if td[2] > 0 else t
     # print()
+    lev = abs(lev)
     text = dict({
         'ENTRY': f"#{alert['code']} ✔️ \nFilled.",
         'STTP1': f"#{alert['code']} ✅ \n{alert['pair']} \nFirst Short Term Target hit.📈           \nProfit : {profit}% (x{lev}) 💸        \nTime : {t}",
