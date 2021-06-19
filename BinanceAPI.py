@@ -24,13 +24,13 @@ def getAllPrices():
 
 
 def getPrice(coin,code=0):
-    if "FUTURES" in code or "SCALP" in code:
+    if not code == 0 and "FUTURES" in code or "SCALP" in code:
         return (PREMIUMPRICES[coin])    
     return (PRICES[coin])
 
 
 def getPeakPrice(coin, startTime,code):
-    if "FUTURES" in code or "SCALP" in code:
+    if not code == 0 and "FUTURES" in code or "SCALP" in code:
         url = f"https://www.binance.com/fapi/v1/klines?symbol={coin}&interval=1h&startTime={startTime}"
     else:
         url = f"https://www.binance.com/api/v3/klines?symbol={coin}&interval=1h&startTime={startTime}"
