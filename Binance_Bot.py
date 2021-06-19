@@ -51,6 +51,8 @@ def main(i):
     # print(sh.SPOT)
     i = 0
     sendException = True
+    startTime = 0.0
+    endTime = 0.0
     while True:
         try:
             i += 1
@@ -63,7 +65,13 @@ def main(i):
             if ad.isAlertsNeedDump():
                 ad.dumpAlerts()
             processMessage()
+            if(i==1):
+                startTime = datetime.now()
+                print("Initial Check starting at ", startTime)
             checkAlert(i-1)
+            if(i==1):
+                endTime = datetime.now()
+                print("Intial check finished at ",endTime," Duration : ",readableDateDiff(endTime,startTime))
         except Exception as e:
             text = ("error occurred at ", i, time.strftime(
                 "%H:%M:%S", time.localtime()), exception_to_string(e))
