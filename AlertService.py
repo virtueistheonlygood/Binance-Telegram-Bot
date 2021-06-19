@@ -69,7 +69,7 @@ def checkAlert(mode=1):
         for alert in alerts[coin]:
             if alert['isActive']:
                 if mode == 0:
-                    print("initial check - "+alert['code']+" "+coin+" "+alert['type'])
+                    print("initial check - "+str(alert['code'])+" "+coin+" "+alert['type'])
                     peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'])
                     if alert['price']*alert['compare'] <= peakPrice*alert['compare'] and not alert['type'] == "SL":
                         if triggerAlert(alert):
