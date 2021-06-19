@@ -63,49 +63,43 @@ def write_alert(coin, alert):
 
 def checkAlert(mode=1):
     alerts = ad.ALERTS
-    prices = getAllPrices()
+    # prices = getAllPrices()
     flag = False
     for coin in alerts:
         for alert in alerts[coin]:
             if alert['isActive']:
                 if mode == 0:
                     print("initial check - "+coin+" "+alert['type'])
-                    peakPrice = getPeakPrice(
-                        coin, math.floor(alert['createdAt']))
+                    peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'])
                     if alert['price']*alert['compare'] <= peakPrice*alert['compare'] and not alert['type'] == "SL":
                         if triggerAlert(alert):
                             alert['isActive'] = False
-                            alert['triggeredAt'] = float(
-                                datetime.now().timestamp())
+                            alert['triggeredAt'] = float(datetime.now().timestamp())
                             flag = True
                 else:
-                    if alert['price']*alert['compare'] <= prices[coin]*alert['compare']:
+                    if alert['price']*alert['compare'] <= getPrice(coin,alert['code'])*alert['compare']:
                         if triggerAlert(alert):
                             alert['isActive'] = False
-                            alert['triggeredAt'] = math.floor(
-                                datetime.now().timestamp()*1000)
+                            alert['triggeredAt'] = math.floor(datetime.now().timestamp()*1000)
                             flag = True
     if flag:
         ad.ALERTS = alerts
 
 
 def triggerAlert(alert):
-    print("Alert Triggered " + str(alert['code']) + " " +
-          str(alert['pair']) + " at " + str(alert['price']))
+    print("Alert Triggered " + str(alert['code']) + " " + str(alert['pair']) + " at " + str(alert['price']))
     # print(SPOT)
     # print(alert)
     code = alert['code']
     type = alert['type']
 
     if not code == 0:
-        row = sh.SPOT.loc[sh.SPOT["CODE"] == code].iloc[0] if "SPOT" in code else sh.FUTURES.loc[sh.FUTURES["CODE"] == code].iloc[0] if "FUTURES" in code else sh.GEM.loc[sh.GEM["CODE"]
-                                                                                                                                                                          == code].iloc[0] if "GEM" in code else sh.SCALP.loc[sh.SCALP["CODE"] == code].iloc[0] if "SCALP" in code else 0
+        row = sh.SPOT.loc[sh.SPOT["CODE"] == code].iloc[0] if "SPOT" in code else sh.FUTURES.loc[sh.FUTURES["CODE"] == code].iloc[0] if "FUTURES" in code else sh.GEM.loc[sh.GEM["CODE"] == code].iloc[0] if "GEM" in code else sh.SCALP.loc[sh.SCALP["CODE"] == code].iloc[0] if "SCALP" in code else 0
         if row.empty:
             return
         entry = float(row['ENTRY'][1:].replace(',', ''))
         lev = int(row['LEV'])
-        profit = round(((float(row[type][1:].replace(',', '')
-                               )-entry)/entry) * 100 * lev, 2)
+        profit = round(((float(row[type][1:].replace(',', ''))-entry)/entry) * 100 * lev, 2)
         lev = abs(lev)
         # t = ""
         # t = t + str(row['Days']) + " Day(s) "if row['Days'] > 0 else t
@@ -114,8 +108,6 @@ def triggerAlert(alert):
     else:
         profit = ""
         lev = ""
-    td = dhms_from_seconds(date_diff_in_seconds(
-        datetime.now(), datetime.fromtimestamp(alert['createdAt']/1000)))
     t = readableDateDiff(datetime.now(), datetime.fromtimestamp(alert['createdAt']/1000),[1,1,1,0])
     # print()
     
@@ -151,12 +143,10 @@ def createAlert(coin, price=0.0, type="Generic", repeat=1, df=pd.DataFrame()):
     code = 0 if df.empty else df["CODE"]
     if not df.empty and df[type] == '':
         return
-    cmp = getPrice(coin)
+    cmp = getPrice(coin,code)
     price = float(df[type][1:].replace(',', '')) if not code == 0 else price
-    pair = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split(
-        "BTC")[0] + "/BTC") if code == 0 else df["PAIR"]
-    createdAt = math.floor(datetime.now().timestamp()*1000) if code == 0 else math.floor(
-        datetime.strptime(df["POSTED"], '%d/%m/%Y %H:%M:%S').timestamp()*1000)
+    pair = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC") if code == 0 else df["PAIR"]
+    createdAt = math.floor(datetime.now().timestamp()*1000) if code == 0 else math.floor(datetime.strptime(df["POSTED"], '%d/%m/%Y %H:%M:%S').timestamp()*1000)
     alert = {
         'code': code,
         'price': price,
