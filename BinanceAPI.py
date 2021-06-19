@@ -1,3 +1,4 @@
+from pyasn1.type.univ import Null
 import requests
 
 PRICES = dict()
@@ -24,13 +25,18 @@ def getAllPrices():
 
 
 def getPrice(coin,code=0):
-    if not code == 0 and "FUTURES" in code or "SCALP" in code:
-        return (PREMIUMPRICES[coin])    
-    return (PRICES[coin])
+    if code == 0:
+        return (PRICES[coin])
+    elif (not code == 0) and "FUTURES" in code or "SCALP" in code:
+        return (PREMIUMPRICES[coin]) 
+    else:   
+        return (PRICES[coin])
 
 
 def getPeakPrice(coin, startTime,code):
-    if not code == 0 and "FUTURES" in code or "SCALP" in code:
+    if code == 0:
+        url = f"https://www.binance.com/api/v3/klines?symbol={coin}&interval=1h&startTime={startTime}"
+    elif "FUTURES" in code or "SCALP" in code:
         url = f"https://www.binance.com/fapi/v1/klines?symbol={coin}&interval=1h&startTime={startTime}"
     else:
         url = f"https://www.binance.com/api/v3/klines?symbol={coin}&interval=1h&startTime={startTime}"
