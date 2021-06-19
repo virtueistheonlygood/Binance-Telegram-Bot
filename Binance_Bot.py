@@ -57,7 +57,7 @@ def main(i):
         try:
             i += 1
             getAllPrices()
-            if i % 200 == 1:
+            if i % 300 == 1:
                 ad.pumpAlerts()
                 updateSheetAlerts()
                 backupAlerts()
