@@ -28,14 +28,10 @@ def readableDateDiff(dt2,dt1,dhms=[1,1,1,1]):
     seconds = date_diff_in_seconds(dt2,dt1)
     td = dhms_from_seconds(seconds)
     t = ""
-    t = t + str(td[0]) + (" Day " if td[0] ==
-                          1 else " Days ") if td[0] > 0 and dhms[0] else t
-    t = t + str(td[1]) + (" Hour " if td[1] ==
-                          1 else " Hours ") if td[1] > 0 and dhms[1] else t
-    t = t + str(td[2]) + (" Minute " if td[2] ==
-                          1 else " Minutes ") if td[2] > 0 and dhms[2] else t
-    t = t + str(td[3]) + (" Second " if td[3] ==
-                          1 else " Seconds ") if td[3] > 0 and dhms[3] else t
+    t = t + str(td[0]) + (" Day " if td[0] == 1 else " Days ") if td[0] > 0 and dhms[0] else t
+    t = t + str(td[1]) + (" Hour " if td[1] == 1 else " Hours ") if td[1] > 0 and dhms[1] else t
+    t = t + str(td[2]) + (" Minute " if td[2] == 1 else " Minutes ") if td[2] > 0 and dhms[2] else t
+    t = t + str(td[3]) + (" Second " if td[3] == 1 else " Seconds ") if td[3] > 0 and dhms[3] else t
     return t
 
 def write_alert(coin, alert):
@@ -61,6 +57,11 @@ def write_alert(coin, alert):
     ad.ALERTS = alerts
 
 
+def getLEV(code):
+    row = sh.SPOT.loc[sh.SPOT["CODE"] == code].iloc[0] if "SPOT" in code else sh.FUTURES.loc[sh.FUTURES["CODE"] == code].iloc[0] if "FUTURES" in code else sh.GEM.loc[sh.GEM["CODE"] == code].iloc[0] if "GEM" in code else sh.SCALP.loc[sh.SCALP["CODE"] == code].iloc[0] if "SCALP" in code else 0
+    cmp = row["LEV"]
+    return cmp
+
 def checkAlert(mode=1):
     alerts = ad.ALERTS
     # prices = getAllPrices()
@@ -70,7 +71,8 @@ def checkAlert(mode=1):
             if alert['isActive']:
                 if mode == 0:
                     print("initial check - "+str(alert['code'])+" "+coin+" "+alert['type'])
-                    peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'])
+                    cmp = getLEV(alert['code'])
+                    peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'],cmp)
                     if alert['price']*alert['compare'] <= peakPrice*alert['compare'] and not alert['type'] == "SL":
                         if triggerAlert(alert):
                             alert['isActive'] = False
