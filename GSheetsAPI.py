@@ -1,4 +1,5 @@
 from pyasn1.type.univ import Null
+from pygsheets.worksheet import Worksheet
 from FileIO import readFile
 import pandas as pd
 import pygsheets
@@ -19,12 +20,15 @@ wkFutures = pygsheets.Worksheet;
 wkGem = pygsheets.Worksheet;
 wkScalp = pygsheets.Worksheet;
 
-def getSheetDf(SHEET):
+def __getSheetDf(SHEET):
     wk1 = sht.worksheet_by_title(SHEET)
     df = pd.DataFrame(wk1.get_all_records())
     return df
     # print(df.iloc[0, 0])
 
+def __writeSheetDf(SHEET,data,num):
+    wk1 = (sht.worksheet_by_title(SHEET))
+    wk1.insert_rows(num+1,values = [*data.values()], inherit = True)
 
 def getAllSheets():
     
@@ -44,13 +48,26 @@ def getAllSheets():
     # return [SPOT, FUTURES, SCALP, GEM]
 
 def refreshSpot():
-    sh.SPOT = getSheetDf(spot)
+    sh.SPOT = __getSheetDf(spot)
     
 def refreshFutures():
-    sh.FUTURES = getSheetDf(futures)
+    sh.FUTURES = __getSheetDf(futures)
 
 def refreshGem():
-    sh.GEM = getSheetDf(gem)
+    sh.GEM = __getSheetDf(gem)
 
 def refreshScalp():
-    sh.SCALP = getSheetDf(scalp)
+    sh.SCALP = __getSheetDf(scalp)
+
+
+def writeGem(row):
+    __writeSheetDf(gem,row,sh.GEM.shape[0])
+    
+def writeSpot(row):
+    __writeSheetDf(spot,row,sh.SPOT.shape[0])
+    
+def writeFutures(row):
+    __writeSheetDf(futures,row,sh.FUTURES.shape[0])
+    
+def writeScalp(row):
+    __writeSheetDf(scalp,row,sh.SCALP.shape[0])
