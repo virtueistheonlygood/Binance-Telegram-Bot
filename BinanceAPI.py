@@ -33,7 +33,7 @@ def getPrice(coin,code=0):
         return (PRICES[coin])
 
 
-def getPeakPrice(coin, startTime,code):
+def getPeakPrice(coin, startTime,code,cmp=1):
     if code == 0:
         url = f"https://www.binance.com/api/v3/klines?symbol={coin}&interval=1h&startTime={startTime}"
     elif "FUTURES" in code or "SCALP" in code:
@@ -43,7 +43,10 @@ def getPeakPrice(coin, startTime,code):
     response = requests.get(url)
     data = response.json()
     max = -1.0
+    min = 100000000.00
     for i in data:
         if float(i[2]) > max:
             max = float(i[2])
-    return max
+        if float(i[3]) < min:
+            min = float(i[3])
+    return max if cmp>0 else min
