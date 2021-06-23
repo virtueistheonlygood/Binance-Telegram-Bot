@@ -1,3 +1,4 @@
+from ast import parse
 from GSheetsAPI import *
 from AlertService import *
 from TgBotAPI import *
@@ -10,8 +11,8 @@ kingId = readFile("Tg_Ids.json")["kingid"]
 bot_secret = str(readFile("Tg_Ids.json")["bot_secret"])
 
 
-def processMessage():
-    message = getMessage(kingId, bot_secret)
+def processMessage(message = "Default",mode=0):
+    message = message if mode == 1 else getMessage(kingId, bot_secret)
     if "Error" in message:
         raise Exception(message)
     message = message.upper()
@@ -32,10 +33,27 @@ def processMessage():
     sendMessage(kingId, text, bot_secret)
 
 
-def createNewCall(message):
-    return "Invalid Format"
+# Format : NEW SPOT {COIN} {ENTRY PRICE} ({LEV})
 
-# Format : SPOT_1
+
+def createNewCall(message):
+    message = message + " 1"
+    call,typ,coin,price,lev = message.split(" ")[:5]
+    print(call,typ,coin,price,lev)
+    if "GEM" in typ:
+        code = addRowGem(coin,float(price))
+        processMessage(code,1)
+    if "SPOT" in typ:
+        code = addRowSpot(coin,float(price))
+        processMessage(code,1)
+    if "FUTURES" in typ:
+        code = addRowFutures(coin,float(price),lev)
+        processMessage(code,1)
+    if "SCALP" in typ:
+        code = addRowScalp(coin,float(price),lev)
+        processMessage(code,1)
+
+# Format : {CODE}
 
 
 def createSheetCall(message):
@@ -66,7 +84,7 @@ def createSheetCall(message):
     return text
 
 
-# Format : ALERT EOSUSDT 5.16
+# Format : ALERT {COIN} {PRICE}
 
 
 def createAlertFromMessage(message):
@@ -79,7 +97,7 @@ def createAlertFromMessage(message):
     return f"Alert Created {coin} at {price}."
 
 
-#Format : DISABLE/ENABLE (ALERT) CODE (TYPE)
+#Format : DISABLE/ENABLE (ALERT) {CODE} ({TYPE})
 
 def disableAlertFromMessage(message):
     message = message.split(" ")
@@ -202,3 +220,145 @@ def generateCall_SCALP(row):
 
     # print(text)
     return text
+
+
+def addRowGem(coin,price):
+    refreshGem()
+    row = [i for temp,i in sh.GEM.iterrows() if ("GEM" in i['CODE'])][-1]
+    row = row.copy()
+    row = row.to_dict()
+    row['CODE'] = "GEM_" + str(int(row['CODE'].split("_")[1])+1)
+    row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
+    row['SYMBOL'] = coin
+    row['ENTRY'] = "${:.3f}".format(price)
+    
+    row['TP1'] = "${:.3f}".format(price*2)
+    row['TP2'] = "${:.3f}".format(price*3)
+    row['TP3'] = "${:.3f}".format(price*4)
+    
+    row['SL'] = "${:.3f}".format(price*0.3)
+    row['PEAK'] = ""
+    row['CMP'] = ""
+    
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    
+    row['TIME'] = ""
+    row['Days'] = ""
+    row['Hours'] = ""
+    row['Minutes'] = ""
+    
+    row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    row['NOW'] = "=NOW()"
+    writeGem(row)
+    return row['CODE']
+    
+    
+def addRowSpot(coin,price):
+    refreshSpot()
+    row = [i for temp,i in sh.SPOT.iterrows() if ("SPOT" in i['CODE'])][-1]
+    row = row.copy()
+    row = row.to_dict()
+    row['CODE'] = "SPOT_" + str(int(row['CODE'].split("_")[1])+1)
+    row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
+    row['SYMBOL'] = coin
+    row['ENTRY'] = "${:.3f}".format(price)
+    
+    row['STTP1'] = "${:.3f}".format(price*1.1)
+    row['STTP2'] = "${:.3f}".format(price*1.2)
+    row['STTP3'] = "${:.3f}".format(price*1.3)
+    row['MTTP1'] = "${:.3f}".format(price*1.5)
+    row['MTTP2'] = "${:.3f}".format(price*1.7)
+    row['MTTP3'] = "${:.3f}".format(price*1.9)
+    row['LTTP1'] = "${:.3f}".format(price*2)
+    row['LTTP2'] = "${:.3f}".format(price*2.5)
+    row['LTTP3'] = "${:.3f}".format(price*3)
+    
+    row['SL'] = "${:.3f}".format(price*0.85)
+    row['PEAK'] = ""
+    row['CMP'] = ""
+    
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    
+    row['TIME'] = ""
+    row['Days'] = ""
+    row['Hours'] = ""
+    row['Minutes'] = ""
+    
+    row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    row['NOW'] = "=NOW()"
+    writeSpot(row)
+    return row['CODE']
+    
+    
+def addRowFutures(coin,price,lev):
+    refreshFutures()
+    row = [i for temp,i in sh.FUTURES.iterrows() if ("FUTURES" in i['CODE'])][-1]
+    row = row.copy()
+    row = row.to_dict()
+    row['CODE'] = "FUTURES_" + str(int(row['CODE'].split("_")[1])+1)
+    row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
+    row['SYMBOL'] = coin
+    row['ENTRY'] = "${:.3f}".format(price)
+    row['LEV'] = int(lev)
+    
+    row['TP1'] = "${:.3f}".format(price*1.01)
+    row['TP2'] = "${:.3f}".format(price*1.03)
+    row['TP3'] = "${:.3f}".format(price*1.05)
+    row['TP4'] = "${:.3f}".format(price*1.07)
+    row['TP5'] = "${:.3f}".format(price*1.1)
+    row['TP6'] = "${:.3f}".format(price*1.2)
+    row['TP7'] = "${:.3f}".format(price*1.3)
+    
+    row['SL'] = "${:.3f}".format(price*0.9)
+    row['PEAK'] = ""
+    row['CMP'] = ""
+    
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    
+    row['TIME'] = ""
+    row['Days'] = ""
+    row['Hours'] = ""
+    row['Minutes'] = ""
+    
+    row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    row['NOW'] = "=NOW()"
+    writeFutures(row)
+    return row['CODE']
+    
+    
+def addRowScalp(coin,price,lev):
+    refreshScalp()
+    row = [i for temp,i in sh.SCALP.iterrows() if ("SCALP" in i['CODE'])][-1]
+    row = row.copy()
+    row = row.to_dict()
+    row['CODE'] = "SCALP_" + str(int(row['CODE'].split("_")[1])+1)
+    row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
+    row['SYMBOL'] = coin
+    row['ENTRY'] = "${:.3f}".format(price)
+    row['LEV'] = lev
+    
+    row['TP1'] = "${:.3f}".format(price*1.01)
+    row['TP2'] = "${:.3f}".format(price*1.03)
+    row['TP3'] = "${:.3f}".format(price*1.05)
+    row['TP4'] = "${:.3f}".format(price*1.1)
+    
+    row['SL'] ="${:.3f}".format( price*0.5)
+    row['PEAK'] = ""
+    row['CMP'] = ""
+    
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    
+    row['TIME'] = ""
+    row['Days'] = ""
+    row['Hours'] = ""
+    row['Minutes'] = ""
+    
+    row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+    row['NOW'] = "=NOW()"
+    writeScalp(row)
+    return row['CODE']
+    
