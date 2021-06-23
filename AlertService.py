@@ -58,6 +58,8 @@ def write_alert(coin, alert):
 
 
 def getLEV(code):
+    if code==0:
+        return 1
     row = sh.SPOT.loc[sh.SPOT["CODE"] == code].iloc[0] if "SPOT" in code else sh.FUTURES.loc[sh.FUTURES["CODE"] == code].iloc[0] if "FUTURES" in code else sh.GEM.loc[sh.GEM["CODE"] == code].iloc[0] if "GEM" in code else sh.SCALP.loc[sh.SCALP["CODE"] == code].iloc[0] if "SCALP" in code else 0
     cmp = row["LEV"]
     return cmp
