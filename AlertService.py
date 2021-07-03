@@ -61,8 +61,8 @@ def getLEV(code):
     if code==0:
         return 1
     row = sh.SPOT.loc[sh.SPOT["CODE"] == code].iloc[0] if "SPOT" in code else sh.FUTURES.loc[sh.FUTURES["CODE"] == code].iloc[0] if "FUTURES" in code else sh.GEM.loc[sh.GEM["CODE"] == code].iloc[0] if "GEM" in code else sh.SCALP.loc[sh.SCALP["CODE"] == code].iloc[0] if "SCALP" in code else 0
-    cmp = row["LEV"]
-    return cmp
+    compare = row["LEV"]
+    return compare
 
 def checkAlert(mode=1):
     alerts = ad.ALERTS
@@ -73,9 +73,11 @@ def checkAlert(mode=1):
             if alert['isActive']:
                 if mode == 0:
                     print("initial check - "+str(alert['code'])+" "+coin+" "+alert['type'])
-                    cmp = getLEV(alert['code'])
-                    peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'],cmp)
-                    if alert['price']*alert['compare'] <= peakPrice*alert['compare'] and not alert['type'] == "SL":
+                    compare = getLEV(alert['code'])
+                    peakPrice = getPeakPrice(coin, math.floor(alert['createdAt']),alert['code'],compare)
+                    if peakPrice == -1:
+                        continue
+                    elif alert['price']*alert['compare'] <= peakPrice*alert['compare'] and not alert['type'] == "SL":
                         if triggerAlert(alert):
                             alert['isActive'] = False
                             alert['triggeredAt'] = float(datetime.now().timestamp())
