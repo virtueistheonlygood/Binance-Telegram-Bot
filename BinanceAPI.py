@@ -43,7 +43,7 @@ def getPeakPrice(coin, startTime,code,cmp=1):
     response = requests.get(url)
     data = response.json()
     max = -1.0
-    min = 100000000.00
+    min = 100000000.00 if not len(data) == 0 else -1
     for i in data:
         if float(i[2]) > max:
             max = float(i[2])

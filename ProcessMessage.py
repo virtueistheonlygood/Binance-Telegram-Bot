@@ -47,10 +47,10 @@ def createNewCall(message):
         code = addRowSpot(coin,float(price))
         processMessage(code,1)
     if "FUTURES" in typ:
-        code = addRowFutures(coin,float(price),lev)
+        code = addRowFutures(coin,float(price),int(lev))
         processMessage(code,1)
     if "SCALP" in typ:
-        code = addRowScalp(coin,float(price),lev)
+        code = addRowScalp(coin,float(price),int(lev))
         processMessage(code,1)
 
 # Format : {CODE}
@@ -224,19 +224,19 @@ def generateCall_SCALP(row):
 
 def addRowGem(coin,price):
     refreshGem()
-    row = [i for temp,i in sh.GEM.iterrows() if ("GEM" in i['CODE'])][-1]
+    (rownum,row) = [(temp,i) for temp,i in sh.GEM.iterrows() if ("GEM" in i['CODE'])][-1]
     row = row.copy()
     row = row.to_dict()
     row['CODE'] = "GEM_" + str(int(row['CODE'].split("_")[1])+1)
     row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
     row['SYMBOL'] = coin
-    row['ENTRY'] = "${:.3f}".format(price)
+    row['ENTRY'] = "{:.3f}".format(price)
     
-    row['TP1'] = "${:.3f}".format(price*2)
-    row['TP2'] = "${:.3f}".format(price*3)
-    row['TP3'] = "${:.3f}".format(price*4)
+    row['TP1'] = "{:.3f}".format(price*2)
+    row['TP2'] = "{:.3f}".format(price*3)
+    row['TP3'] = "{:.3f}".format(price*4)
     
-    row['SL'] = "${:.3f}".format(price*0.3)
+    row['SL'] = "{:.3f}".format(price*0.3)
     row['PEAK'] = ""
     row['CMP'] = ""
     
@@ -250,31 +250,31 @@ def addRowGem(coin,price):
     
     row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     row['NOW'] = "=NOW()"
-    writeGem(row)
+    writeGem(row,rownum)
     return row['CODE']
     
     
 def addRowSpot(coin,price):
     refreshSpot()
-    row = [i for temp,i in sh.SPOT.iterrows() if ("SPOT" in i['CODE'])][-1]
+    (rownum,row) = [(temp,i) for temp,i in sh.SPOT.iterrows() if ("SPOT" in i['CODE'])][-1]
     row = row.copy()
     row = row.to_dict()
     row['CODE'] = "SPOT_" + str(int(row['CODE'].split("_")[1])+1)
     row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
     row['SYMBOL'] = coin
-    row['ENTRY'] = "${:.3f}".format(price)
+    row['ENTRY'] = "{:.3f}".format(price)
     
-    row['STTP1'] = "${:.3f}".format(price*1.1)
-    row['STTP2'] = "${:.3f}".format(price*1.2)
-    row['STTP3'] = "${:.3f}".format(price*1.3)
-    row['MTTP1'] = "${:.3f}".format(price*1.5)
-    row['MTTP2'] = "${:.3f}".format(price*1.7)
-    row['MTTP3'] = "${:.3f}".format(price*1.9)
-    row['LTTP1'] = "${:.3f}".format(price*2)
-    row['LTTP2'] = "${:.3f}".format(price*2.5)
-    row['LTTP3'] = "${:.3f}".format(price*3)
+    row['STTP1'] = "{:.3f}".format(price*1.1)
+    row['STTP2'] = "{:.3f}".format(price*1.2)
+    row['STTP3'] = "{:.3f}".format(price*1.3)
+    row['MTTP1'] = "{:.3f}".format(price*1.5)
+    row['MTTP2'] = "{:.3f}".format(price*1.7)
+    row['MTTP3'] = "{:.3f}".format(price*1.9)
+    row['LTTP1'] = "{:.3f}".format(price*2)
+    row['LTTP2'] = "{:.3f}".format(price*2.5)
+    row['LTTP3'] = "{:.3f}".format(price*3)
     
-    row['SL'] = "${:.3f}".format(price*0.85)
+    row['SL'] = "{:.3f}".format(price*0.85)
     row['PEAK'] = ""
     row['CMP'] = ""
     
@@ -288,30 +288,30 @@ def addRowSpot(coin,price):
     
     row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     row['NOW'] = "=NOW()"
-    writeSpot(row)
+    writeSpot(row,rownum)
     return row['CODE']
     
     
 def addRowFutures(coin,price,lev):
     refreshFutures()
-    row = [i for temp,i in sh.FUTURES.iterrows() if ("FUTURES" in i['CODE'])][-1]
+    (rownum,row) = [(temp,i) for temp,i in sh.FUTURES.iterrows() if ("FUTURES" in i['CODE'])][-1]
     row = row.copy()
     row = row.to_dict()
     row['CODE'] = "FUTURES_" + str(int(row['CODE'].split("_")[1])+1)
     row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
     row['SYMBOL'] = coin
-    row['ENTRY'] = "${:.3f}".format(price)
+    row['ENTRY'] = "{:.3f}".format(price)
     row['LEV'] = int(lev)
     
-    row['TP1'] = "${:.3f}".format(price*1.01)
-    row['TP2'] = "${:.3f}".format(price*1.03)
-    row['TP3'] = "${:.3f}".format(price*1.05)
-    row['TP4'] = "${:.3f}".format(price*1.07)
-    row['TP5'] = "${:.3f}".format(price*1.1)
-    row['TP6'] = "${:.3f}".format(price*1.2)
-    row['TP7'] = "${:.3f}".format(price*1.3)
+    row['TP1'] = "{:.3f}".format(price*1.01) if lev > 0 else "{:.3f}".format(price*0.99)
+    row['TP2'] = "{:.3f}".format(price*1.03) if lev > 0 else "{:.3f}".format(price*0.97)
+    row['TP3'] = "{:.3f}".format(price*1.05) if lev > 0 else "{:.3f}".format(price*0.95)
+    row['TP4'] = "{:.3f}".format(price*1.07) if lev > 0 else "{:.3f}".format(price*0.93)
+    row['TP5'] = "{:.3f}".format(price*1.1) if lev > 0 else "{:.3f}".format(price*0.9)
+    row['TP6'] = "{:.3f}".format(price*1.2) if lev > 0 else "{:.3f}".format(price*0.8)
+    row['TP7'] = "{:.3f}".format(price*1.3) if lev > 0 else "{:.3f}".format(price*0.7)
     
-    row['SL'] = "${:.3f}".format(price*0.9)
+    row['SL'] = "{:.3f}".format(price*0.9) if lev > 0 else "{:.3f}".format(price*1.1)
     row['PEAK'] = ""
     row['CMP'] = ""
     
@@ -325,27 +325,27 @@ def addRowFutures(coin,price,lev):
     
     row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     row['NOW'] = "=NOW()"
-    writeFutures(row)
+    writeFutures(row,rownum)
     return row['CODE']
     
     
 def addRowScalp(coin,price,lev):
     refreshScalp()
-    row = [i for temp,i in sh.SCALP.iterrows() if ("SCALP" in i['CODE'])][-1]
+    (rownum,row) = [(temp,i) for temp,i in sh.SCALP.iterrows() if ("SCALP" in i['CODE'])][-1]
     row = row.copy()
     row = row.to_dict()
     row['CODE'] = "SCALP_" + str(int(row['CODE'].split("_")[1])+1)
     row['PAIR'] = ("$" + coin.split("USDT")[0]+"/USDT" if "USDT" in coin else coin.split("BTC")[0] + "/BTC")
     row['SYMBOL'] = coin
-    row['ENTRY'] = "${:.3f}".format(price)
+    row['ENTRY'] = "{:.3f}".format(price)
     row['LEV'] = lev
     
-    row['TP1'] = "${:.3f}".format(price*1.01)
-    row['TP2'] = "${:.3f}".format(price*1.03)
-    row['TP3'] = "${:.3f}".format(price*1.05)
-    row['TP4'] = "${:.3f}".format(price*1.1)
+    row['TP1'] = "{:.3f}".format(price*1.01) if lev > 0 else "{:.3f}".format(price*0.99)
+    row['TP2'] = "{:.3f}".format(price*1.03) if lev > 0 else "{:.3f}".format(price*0.97)
+    row['TP3'] = "{:.3f}".format(price*1.05) if lev > 0 else "{:.3f}".format(price*0.95)
+    row['TP4'] = "{:.3f}".format(price*1.1) if lev > 0 else "{:.3f}".format(price*0.9)
     
-    row['SL'] ="${:.3f}".format( price*0.5)
+    row['SL'] ="{:.3f}".format( price*0.95) if lev > 0 else "{:.3f}".format(price*1.05)
     row['PEAK'] = ""
     row['CMP'] = ""
     
@@ -359,6 +359,6 @@ def addRowScalp(coin,price,lev):
     
     row['POSTED'] = str(datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
     row['NOW'] = "=NOW()"
-    writeScalp(row)
+    writeScalp(row,rownum)
     return row['CODE']
     

@@ -1,4 +1,8 @@
+from os import W_OK
 from pyasn1.type.univ import Null
+from pygsheets.cell import Cell
+from pygsheets.custom_types import WorkSheetProperty
+from pygsheets.spreadsheet import Spreadsheet
 from pygsheets.worksheet import Worksheet
 from FileIO import readFile
 import pandas as pd
@@ -24,11 +28,16 @@ def __getSheetDf(SHEET):
     wk1 = sht.worksheet_by_title(SHEET)
     df = pd.DataFrame(wk1.get_all_records())
     return df
-    # print(df.iloc[0, 0])
 
 def __writeSheetDf(SHEET,data,num):
     wk1 = (sht.worksheet_by_title(SHEET))
-    wk1.insert_rows(num+1,values = [*data.values()], inherit = True)
+    # wk1 = Worksheet(sht,sht.worksheet_by_title(SHEET).jsonSheet)
+    wk1.insert_rows(num+2,values = [*data.values()], inherit = True)
+    row1 = wk1.get_row(1)
+    rown = wk1.get_row(num+3,returnas='cells')
+    for i in rown:
+        if("TP" in row1[i.col-1] or "SL" in row1[i.col-1]):
+            i.color = (1,1,1,0)
 
 def getAllSheets():
     
@@ -36,16 +45,6 @@ def getAllSheets():
     refreshFutures()
     refreshGem()
     refreshScalp()
-    # sh.SPOT = pd.DataFrame(sht.worksheet_by_title('SPOT'))
-    # sh.FUTURES = pd.DataFrame(sht.worksheet_by_title('FUTURES'))
-    # sh.SCALP = pd.DataFrame(sht.worksheet_by_title('SCALP'))
-    # sh.GEM = pd.DataFrame(sht.worksheet_by_title('GEM'))
-    # sh.SPOT = getSheetDf(spot)
-    # sh.FUTURES = getSheetDf(futures)
-    # sh.SCALP = getSheetDf(scalp)
-    # sh.GEM = getSheetDf(gem)
-    # print(sh.SPOT)s
-    # return [SPOT, FUTURES, SCALP, GEM]
 
 def refreshSpot():
     sh.SPOT = __getSheetDf(spot)
@@ -60,14 +59,14 @@ def refreshScalp():
     sh.SCALP = __getSheetDf(scalp)
 
 
-def writeGem(row):
-    __writeSheetDf(gem,row,sh.GEM.shape[0])
+def writeGem(row,rownum):
+    __writeSheetDf(gem,row,rownum)
     
-def writeSpot(row):
-    __writeSheetDf(spot,row,sh.SPOT.shape[0])
+def writeSpot(row,rownum):
+    __writeSheetDf(spot,row,rownum)
     
-def writeFutures(row):
-    __writeSheetDf(futures,row,sh.FUTURES.shape[0])
+def writeFutures(row,rownum):
+    __writeSheetDf(futures,row,rownum)
     
-def writeScalp(row):
-    __writeSheetDf(scalp,row,sh.SCALP.shape[0])
+def writeScalp(row,rownum):
+    __writeSheetDf(scalp,row,rownum)
