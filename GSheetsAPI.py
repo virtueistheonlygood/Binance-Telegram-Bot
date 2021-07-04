@@ -33,11 +33,11 @@ def __writeSheetDf(SHEET,data,num):
     wk1 = (sht.worksheet_by_title(SHEET))
     # wk1 = Worksheet(sht,sht.worksheet_by_title(SHEET).jsonSheet)
     wk1.insert_rows(num+2,values = [*data.values()], inherit = True)
-    row1 = wk1.get_row(1)
-    rown = wk1.get_row(num+3,returnas='cells')
-    for i in rown:
-        if("TP" in row1[i.col-1] or "SL" in row1[i.col-1]):
-            i.color = (1,1,1,0)
+    # row1 = wk1.get_row(1)
+    # rown = wk1.get_row(num+3,returnas='cells')
+    # for i in rown:
+    #     if("TP" in row1[i.col-1] or "SL" in row1[i.col-1]):
+    #         i.color = (1,1,1,0)
 
 def getAllSheets():
     
