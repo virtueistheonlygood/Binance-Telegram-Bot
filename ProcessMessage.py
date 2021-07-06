@@ -240,8 +240,8 @@ def addRowGem(coin,price):
     row['PEAK'] = ""
     row['CMP'] = ""
     
-    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
-    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i or "ERROR" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i or "ERROR" in i][0]] = ""
     
     row['TIME'] = ""
     row['Days'] = ""
@@ -278,8 +278,8 @@ def addRowSpot(coin,price):
     row['PEAK'] = ""
     row['CMP'] = ""
     
-    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
-    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i or "ERROR" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i or "ERROR" in i][0]] = ""
     
     row['TIME'] = ""
     row['Days'] = ""
@@ -315,8 +315,8 @@ def addRowFutures(coin,price,lev):
     row['PEAK'] = ""
     row['CMP'] = ""
     
-    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
-    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i or "ERROR" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i or "ERROR" in i][0]] = ""
     
     row['TIME'] = ""
     row['Days'] = ""
@@ -349,8 +349,8 @@ def addRowScalp(coin,price,lev):
     row['PEAK'] = ""
     row['CMP'] = ""
     
-    row[[i for i in row.keys() if "PNL" in i or "Loading" in i][0]] = ""
-    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i][0]] = ""
+    row[[i for i in row.keys() if "PNL" in i or "Loading" in i or "ERROR" in i][0]] = ""
+    row[[i for i in row.keys() if "PEAK -" in i or "Loading" in i or "ERROR" in i][0]] = ""
     
     row['TIME'] = ""
     row['Days'] = ""
